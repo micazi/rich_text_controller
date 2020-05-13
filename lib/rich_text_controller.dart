@@ -3,9 +3,9 @@ library rich_text_controller;
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
-class RichTextEditingController extends TextEditingController {
+class RichTextController extends TextEditingController {
   final Map<RegExp, TextStyle> patternMap;
-  RichTextEditingController(this.patternMap) : assert(patternMap != null);
+  RichTextController(this.patternMap) : assert(patternMap != null);
 
   @override
   TextSpan buildTextSpan({TextStyle style, bool withComposing}) {
