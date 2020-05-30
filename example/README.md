@@ -44,6 +44,16 @@ RichTextController _controller;
           //
           RegExp(r"\B![a-zA-Z0-9]+\b"):TextStyle(color:Colors.yellow, fontStyle:FontStyle.italic),
          // add as many expressions as you need!
+
+         //! starting v1.1.0
+         // Now you have an onMatch callback that gives you access to a List<String>
+         // which contains all matched strings
+         onMatch: (List<String> matches){
+           // Do something with matches.
+           //! P.S
+           // as long as you're typing, the controller will keep updating the list.
+         }
+         //!
       });
     super.initState();
   }
