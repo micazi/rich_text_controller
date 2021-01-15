@@ -6,7 +6,7 @@ import 'package:flutter/widgets.dart';
 class RichTextController extends TextEditingController {
   final Map<RegExp, TextStyle> patternMap;
   final Function(List<String> match) onMatch;
-  RichTextController(this.patternMap, {this.onMatch})
+  RichTextController(this.patternMap, {this.onMatch = null})
       : assert(patternMap != null);
 
   @override
@@ -30,7 +30,9 @@ class RichTextController extends TextEditingController {
         );
         if (!matches.contains(m[0])) {
           matches.add(m[0]);
-          return this.onMatch(matches);
+          if(this.onMatch != null) {
+            return this.onMatch(matches);
+          }
         }
         return m[0];
       },
