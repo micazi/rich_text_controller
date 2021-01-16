@@ -4,24 +4,33 @@ An extended text editing controller that supports different inline styles for cu
 
 ## Getting Started
 
-Add `rich_text_controller` to your package's pubspec.yaml file:
+### 1. Depend on it
 
-```dart
+Add this to your package's pubspec.yaml file:
+
+```
 dependencies:
-  pagarme_flutter_card_hash: [latest version]
+  rich_text_controller: [latest version]
 ```
 
-Import it
+### 2. Install it
+
+```
+$ flutter pub get
+```
+
+### 3. Import it
 
 ```dart
 import'rich_text_controller/rich_text_controller.dart';
 ```
 
-## Demo
+## Example
 
 ![](lib/demo.gif)
 
-## Usage
+.
+.
 
 ```dart
 import 'package:flutter/material.dart';
@@ -76,3 +85,31 @@ RichTextController _controller;
   }
 }
 ```
+
+### Assertions
+
+- Must not add both stringMap and patternMap, only one of them.
+
+## Contributing
+
+Contributing is more than welcomed on any of my packages/plugins.
+I will try to keep adding suggested features as i go.
+
+**Current list of contributors:**
+
+- EriKWDev
+
+## Versioning
+
+- **V1.0.0** - First Release.
+- **V1.0.1** - Added Example.
+- **V1.1.0** - Added onMatch Callback.
+- **V1.2.0** - Resolved Issues + added String-Matching.
+
+## Authors
+
+**Michael Aziz** - [Github](https://github.com/micwaziz)
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
