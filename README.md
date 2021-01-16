@@ -6,15 +6,15 @@ An extended text editing controller that supports different inline styles for cu
 
 Add `rich_text_controller` to your package's pubspec.yaml file:
 
-```dart
+```yml
 dependencies:
-  pagarme_flutter_card_hash: [latest version]
+  rich_text_controller: [latest version]
 ```
 
 Import it
 
 ```dart
-import'rich_text_controller/rich_text_controller.dart';
+import 'package:rich_text_controller/rich_text_controller.dart';
 ```
 
 ## Demo
@@ -25,7 +25,7 @@ import'rich_text_controller/rich_text_controller.dart';
 
 ```dart
 import 'package:flutter/material.dart';
-import 'rich_text_controller/rich_text_controller.dart';
+import 'package:rich_text_controller/rich_text_controller.dart';
 
 void main() => runApp(MyApp());
 
