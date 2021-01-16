@@ -19,7 +19,7 @@ class RichTextController extends TextEditingController {
     text.splitMapJoin(
       allRegex,
       onMatch: (Match m) {
-        RegExp k = patternMap.entries.singleWhere((element) {
+        RegExp k = patternMap.entries.firstWhere((element) {
           return element.key.allMatches(m[0]).isNotEmpty;
         }).key;
         children.add(
