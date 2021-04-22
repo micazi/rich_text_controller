@@ -105,6 +105,7 @@ I will try to keep adding suggested features as i go.
 - **V1.0.1** - Added Example.
 - **V1.1.0** - Added onMatch Callback.
 - **V1.2.0** - Resolved Issues + added String-Matching.
+- **V1.3.0** - Resolved Issues + added Null safety.
 
 ## Authors
 
