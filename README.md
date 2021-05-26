@@ -98,6 +98,7 @@ I will try to keep adding suggested features as i go.
 **Current list of contributors:**
 
 - EriKWDev
+- vs-krasnov
 
 ## Versioning
 
