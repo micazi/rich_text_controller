@@ -35,7 +35,7 @@ class RichTextController extends TextEditingController {
         super.fromValue(value);
 
   @override
-  TextSpan buildTextSpan({TextStyle? style, required bool withComposing}) {
+  TextSpan buildTextSpan({required BuildContext context, TextStyle? style, required bool withComposing}) {
     List<TextSpan> children = [];
     List<String> matches = [];
     // Validating with REGEX
