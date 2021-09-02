@@ -6,7 +6,7 @@ import 'package:flutter/widgets.dart';
 class RichTextController extends TextEditingController {
   final Map<RegExp, TextStyle>? patternMap;
   final Map<String, TextStyle>? stringMap;
-  final Function(List<String> match)? onMatch;
+  final String Function(List<String> match)? onMatch;
   final bool deleteOnBack;
   bool clearMatch = false;
 
@@ -35,9 +35,12 @@ class RichTextController extends TextEditingController {
         super.fromValue(value);
 
   @override
-  TextSpan buildTextSpan({required BuildContext context, TextStyle? style, required bool withComposing}) {
-    List<TextSpan> children = [];
-    List<String> matches = [];
+  TextSpan buildTextSpan(
+      {required BuildContext context,
+      TextStyle? style,
+      required bool withComposing}) {
+    final List<TextSpan> children = [];
+    final List<String> matches = [];
     // Validating with REGEX
     RegExp? allRegex;
     allRegex = patternMap != null
@@ -53,10 +56,10 @@ class RichTextController extends TextEditingController {
       stringMap == null ? allRegex! : stringRegex!,
       onMatch: (Match m) {
         if (!matches.contains(m[0])) matches.add(m[0]!);
-        RegExp? k = patternMap?.entries.firstWhere((element) {
+        final RegExp? k = patternMap?.entries.firstWhere((element) {
           return element.key.allMatches(m[0]!).isNotEmpty;
         }).key;
-        String? ks = stringMap?.entries.firstWhere((element) {
+        final String? ks = stringMap?.entries.firstWhere((element) {
           return element.key.allMatches(m[0]!).isNotEmpty;
         }).key;
 
