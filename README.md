@@ -1,6 +1,6 @@
 # rich_text_controller
 
-An extended text editing controller that supports different inline styles for custom regex
+An extended text editing controller that supports different inline styles for custom regex.
 
 ## Getting Started
 
@@ -29,66 +29,20 @@ import'rich_text_controller/rich_text_controller.dart';
 
 ![](lib/demo.gif)
 
-.
-.
+See Example page for example code.
 
-```dart
-import 'package:flutter/material.dart';
-import 'rich_text_controller/rich_text_controller.dart';
+## Usage
 
-void main() => runApp(MyApp());
-
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'RichText Controller Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: RichTextControllerDemo(),
-    );
-  }
-}
-
-class RichTextControllerDemo extends StatefulWidget {
-  @override
-  _RichTextControllerDemoState createState() => _RichTextControllerDemoState();
-}
-
-class _RichTextControllerDemoState extends State<RichTextControllerDemo> {
-
-// Add a controller
-RichTextController _controller;
-
-  @override
-  void initState() {
-      // initialize with your custom regex patterns and styles
-      _controller = RichTextController({
-           //
-          //* Returns every Hashtag with red color
-          //
-          RegExp(r"\B#[a-zA-Z0-9]+\b"):TextStyle(color:Colors.red),
-         // add as many expressions as you need!
-
-         //! starting v1.1.0
-         // Now you have an onMatch callback that gives you access to a List<String>
-         // which contains all matched strings
-         onMatch: (List<String> matches){
-           // Do something with matches.
-           //! P.S
-           // as long as you're typing, the controller will keep updating the list.
-         }
-         //!
-      });
-    super.initState();
-  }
-}
-```
+| Property                                           | Description                                               | Default   |
+| -------------------------------------------------- | --------------------------------------------------------- | --------- |
+| **Map<RegExp, TextStyle>** patternMatchMap         | Map to match a certain RegExp pattern with a custom style | **--**    |
+| **Map<String, TextStyle>** stringMatchMap          | Map to match a certain word with a custom style           | **--**    |
+| **@required Function(List<String> match)** onMatch | Void Callback for matched content                         | **--**    |
+| **bool** deleteOnBack                              | delete the last matched content on backspace or not       | **false** |
 
 ### Assertions
 
-- Must not add both stringMap and patternMap, only one of them.
+- Must not add both patternMatchMap and stringMatchMap, only one of them.
 
 ## Contributing
 
@@ -98,6 +52,7 @@ I will try to keep adding suggested features as i go.
 **Current list of contributors:**
 
 - EriKWDev
+- avatarnguyen
 
 ## Versioning
 
@@ -106,6 +61,7 @@ I will try to keep adding suggested features as i go.
 - **V1.1.0** - Added onMatch Callback.
 - **V1.2.0** - Resolved Issues + added String-Matching.
 - **V1.3.0** - Resolved Issues + added Null safety.
+- **V1.4.0** - Resolved Issues + added deleteOnBack functionality.
 
 ## Authors
 

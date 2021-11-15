@@ -7,3 +7,5 @@
 ## [1.2.0] - Resolved Issues + added String-Matching.
 
 ## [1.3.0] - Resolved Issues + added Null safety.
+
+## [1.4.0] - Resolved Issues + added deleteOnBack functionality.
