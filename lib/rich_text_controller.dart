@@ -81,9 +81,13 @@ class RichTextController extends TextEditingController {
         final RegExp? k = patternMatchMap?.entries.firstWhere((element) {
           return element.key.allMatches(m[0]!).isNotEmpty;
         }).key;
-        final String? ks = stringMatchMap?.entries.firstWhere((element) {
-          return element.key.allMatches(m[0]!).isNotEmpty;
-        }).key;
+        
+        
+        final String? ks = stringMatchMap?[m[0]] != null
+            ? stringMatchMap?.entries.firstWhere((element) {
+                return element.key.allMatches(m[0]!).isNotEmpty;
+              }).key
+            : '';
         if (deleteOnBack!) {
           if ((isBack(text, _lastValue) && m.end == selection.baseOffset)) {
             WidgetsBinding.instance?.addPostFrameCallback((_) {
