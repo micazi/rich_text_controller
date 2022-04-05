@@ -21,7 +21,8 @@ import 'package:flutter/widgets.dart';
 ///         RegExp(r"\B@[a-zA-Z0-9]+\b"): const TextStyle(
 ///           fontWeight: FontWeight.w800,
 ///           color: Colors.blue,
-///         ),
+///         },
+/// );
 ///
 ///  TextFormField(
 ///  controller: _controller,
