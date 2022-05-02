@@ -22,7 +22,7 @@ $ flutter pub get
 ### 3. Import it
 
 ```dart
-import'rich_text_controller/rich_text_controller.dart';
+import 'package:rich_text_controller/rich_text_controller.dart';
 ```
 
 ## Example
