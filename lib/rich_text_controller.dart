@@ -47,28 +47,21 @@ class RichTextController extends TextEditingController {
     this.stringMatchMap,
     required this.onMatch,
     this.deleteOnBack = false,
-  })  : assert((patternMatchMap != null && stringMatchMap == null) ||
-            (patternMatchMap == null && stringMatchMap != null)),
+  })  : assert(
+            (patternMatchMap != null && stringMatchMap == null) || (patternMatchMap == null && stringMatchMap != null)),
         super(text: text);
 
   @override
-  TextSpan buildTextSpan(
-      {required BuildContext context,
-      TextStyle? style,
-      required bool withComposing}) {
+  TextSpan buildTextSpan({required BuildContext context, TextStyle? style, required bool withComposing}) {
     List<TextSpan> children = [];
     List<String> matches = [];
 
     // Validating with REGEX
     RegExp? allRegex;
-    allRegex = patternMatchMap != null
-        ? RegExp(patternMatchMap?.keys.map((e) => e.pattern).join('|') ?? "")
-        : null;
+    allRegex = patternMatchMap != null ? RegExp(patternMatchMap?.keys.map((e) => e.pattern).join('|') ?? "") : null;
     // Validating with Strings
     RegExp? stringRegex;
-    stringRegex = stringMatchMap != null
-        ? RegExp(r'\b' + stringMatchMap!.keys.join('|').toString() + r'+\b')
-        : null;
+    stringRegex = stringMatchMap != null ? RegExp(r'\b' + stringMatchMap!.keys.join('|').toString() + r'+\b') : null;
     ////
     text.splitMapJoin(
       stringMatchMap == null ? allRegex! : stringRegex!,
@@ -86,7 +79,7 @@ class RichTextController extends TextEditingController {
         }).key;
         if (deleteOnBack!) {
           if ((isBack(text, _lastValue) && m.end == selection.baseOffset)) {
-            WidgetsBinding.instance?.addPostFrameCallback((_) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
               children.removeWhere((element) => element.text! == text);
               text = text.replaceRange(m.start, m.end, "");
               selection = selection.copyWith(
@@ -98,9 +91,7 @@ class RichTextController extends TextEditingController {
             children.add(
               TextSpan(
                 text: m[0],
-                style: stringMatchMap == null
-                    ? patternMatchMap![k]
-                    : stringMatchMap![ks],
+                style: stringMatchMap == null ? patternMatchMap![k] : stringMatchMap![ks],
               ),
             );
           }
@@ -108,9 +99,7 @@ class RichTextController extends TextEditingController {
           children.add(
             TextSpan(
               text: m[0],
-              style: stringMatchMap == null
-                  ? patternMatchMap![k]
-                  : stringMatchMap![ks],
+              style: stringMatchMap == null ? patternMatchMap![k] : stringMatchMap![ks],
             ),
           );
         }
