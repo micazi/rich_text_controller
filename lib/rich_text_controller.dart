@@ -57,7 +57,7 @@ class RichTextController extends TextEditingController {
       TextStyle? style,
       required bool withComposing}) {
     List<TextSpan> children = [];
-    List<String> matches = [];
+    final matches = <String>{};
 
     // Validating with REGEX
     RegExp? allRegex;
@@ -77,7 +77,7 @@ class RichTextController extends TextEditingController {
         return span.toString();
       },
       onMatch: (Match m) {
-        if (!matches.contains(m[0])) matches.add(m[0]!);
+        matches.add(m[0]!);
         final RegExp? k = patternMatchMap?.entries.firstWhere((element) {
           return element.key.allMatches(m[0]!).isNotEmpty;
         }).key;
@@ -86,7 +86,7 @@ class RichTextController extends TextEditingController {
         }).key;
         if (deleteOnBack!) {
           if ((isBack(text, _lastValue) && m.end == selection.baseOffset)) {
-            WidgetsBinding.instance?.addPostFrameCallback((_) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
               children.removeWhere((element) => element.text! == text);
               text = text.replaceRange(m.start, m.end, "");
               selection = selection.copyWith(
@@ -114,8 +114,8 @@ class RichTextController extends TextEditingController {
             ),
           );
         }
-
-        return (onMatch(matches) ?? '');
+        final matchToList = List<String>.unmodifiable(matches);
+        return (onMatch(matchToList) ?? '');
       },
     );
 
