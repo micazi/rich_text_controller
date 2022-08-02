@@ -34,6 +34,7 @@ class RichTextController extends TextEditingController {
   final Map<RegExp, TextStyle>? patternMatchMap;
   final Map<String, TextStyle>? stringMatchMap;
   final Function(List<String> match) onMatch;
+  final Function(List<Map<String, List<int>>>)? onMatchIndex;
   final bool? deleteOnBack;
   String _lastValue = "";
 
@@ -46,6 +47,7 @@ class RichTextController extends TextEditingController {
     this.patternMatchMap,
     this.stringMatchMap,
     required this.onMatch,
+    this.onMatchIndex,
     this.deleteOnBack = false,
   })  : assert((patternMatchMap != null && stringMatchMap == null) ||
             (patternMatchMap == null && stringMatchMap != null)),
@@ -58,6 +60,7 @@ class RichTextController extends TextEditingController {
       required bool withComposing}) {
     List<TextSpan> children = [];
     List<String> matches = [];
+    List<Map<String, List<int>>> matchIndex = [];
 
     // Validating with REGEX
     RegExp? allRegex;
@@ -114,6 +117,11 @@ class RichTextController extends TextEditingController {
             ),
           );
         }
+        final resultMatchIndex = matchValueIndex(m);
+        if (resultMatchIndex != null && onMatchIndex != null) {
+          matchIndex.add(resultMatchIndex);
+          onMatchIndex!(matchIndex);
+        }
 
         return (onMatch(matches) ?? '');
       },
@@ -121,5 +129,18 @@ class RichTextController extends TextEditingController {
 
     _lastValue = text;
     return TextSpan(style: style, children: children);
+  }
+
+  Map<String, List<int>>? matchValueIndex(Match match) {
+    final matchValue = match[0]?.replaceFirstMapped('#', (match) => '');
+    if (matchValue != null) {
+      final firstMatchChar = match.start + 1;
+      final lastMatchChar = match.end - 1;
+      final compactMatch = {
+        matchValue: [firstMatchChar, lastMatchChar]
+      };
+      return compactMatch;
+    }
+    return null;
   }
 }
