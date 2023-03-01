@@ -86,7 +86,7 @@ class RichTextController extends TextEditingController {
         }).key;
         if (deleteOnBack!) {
           if ((isBack(text, _lastValue) && m.end == selection.baseOffset)) {
-            WidgetsBinding.instance?.addPostFrameCallback((_) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
               children.removeWhere((element) => element.text! == text);
               text = text.replaceRange(m.start, m.end, "");
               selection = selection.copyWith(
