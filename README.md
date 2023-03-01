@@ -39,6 +39,10 @@ See Example page for example code.
 | **Map<String, TextStyle>** stringMatchMap          | Map to match a certain word with a custom style           | **--**    |
 | **@required Function(List<String> match)** onMatch | Void Callback for matched content                         | **--**    |
 | **bool** deleteOnBack                              | delete the last matched content on backspace or not       | **false** |
+| **bool** regExpCaseSensitive                       | control the caseSensitive parameter of the used [RegExp]  | **true** |
+| **bool** regExpDotAll                              | control the dotAll parameter of the used [RegExp]         | **false** |
+| **bool** regExpMultiLine                           | control the multiLine parameter of the used [RegExp]      | **false** |
+| **bool** regExpUnicode                             | control the unicode parameter of the used [RegExp]        | **false** |
 
 ### Assertions
 

@@ -22,6 +22,9 @@ import 'package:flutter/widgets.dart';
 ///           fontWeight: FontWeight.w800,
 ///           color: Colors.blue,
 ///         ),
+///       },
+///       regExpCaseSensitive: false,
+/// );
 ///
 ///  TextFormField(
 ///  controller: _controller,
@@ -37,6 +40,15 @@ class RichTextController extends TextEditingController {
   final bool? deleteOnBack;
   String _lastValue = "";
 
+  /// controls the caseSensitive property of the full [RegExp] used to pattern match
+  final bool regExpCaseSensitive;
+  /// controls the dotAll property of the full [RegExp] used to pattern match
+  final bool regExpDotAll;
+  /// controls the multiLine property of the full [RegExp] used to pattern match
+  final bool regExpMultiLine;
+  /// controls the unicode property of the full [RegExp] used to pattern match
+  final bool regExpUnicode;
+
   bool isBack(String current, String last) {
     return current.length < last.length;
   }
@@ -47,6 +59,10 @@ class RichTextController extends TextEditingController {
     this.stringMatchMap,
     required this.onMatch,
     this.deleteOnBack = false,
+    this.regExpCaseSensitive = true,
+    this.regExpDotAll = false,
+    this.regExpMultiLine = false, 
+    this.regExpUnicode = false
   })  : assert((patternMatchMap != null && stringMatchMap == null) ||
             (patternMatchMap == null && stringMatchMap != null)),
         super(text: text);
@@ -62,12 +78,24 @@ class RichTextController extends TextEditingController {
     // Validating with REGEX
     RegExp? allRegex;
     allRegex = patternMatchMap != null
-        ? RegExp(patternMatchMap?.keys.map((e) => e.pattern).join('|') ?? "")
+        ? RegExp(
+          patternMatchMap?.keys.map((e) => e.pattern).join('|') ?? "", 
+          caseSensitive: regExpCaseSensitive,
+          dotAll: regExpDotAll,
+          multiLine: regExpMultiLine,
+          unicode: regExpUnicode
+        )
         : null;
     // Validating with Strings
     RegExp? stringRegex;
     stringRegex = stringMatchMap != null
-        ? RegExp(r'\b' + stringMatchMap!.keys.join('|').toString() + r'+\b')
+        ? RegExp(
+          r'\b' + stringMatchMap!.keys.join('|').toString() + r'+\b',
+          caseSensitive: regExpCaseSensitive,
+          dotAll: regExpDotAll,
+          multiLine: regExpMultiLine,
+          unicode: regExpUnicode
+        )
         : null;
     ////
     text.splitMapJoin(

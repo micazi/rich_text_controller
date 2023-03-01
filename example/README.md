@@ -64,6 +64,8 @@ RichTextController _controller;
            // as long as you're typing, the controller will keep updating the list.
          }
          deleteOnBack: true,
+         // You can control the [RegExp] options used:
+         regExpUnicode: true,
 
       );
     super.initState();
