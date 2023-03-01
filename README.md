@@ -22,7 +22,7 @@ $ flutter pub get
 ### 3. Import it
 
 ```dart
-import'rich_text_controller/rich_text_controller.dart';
+import'package:rich_text_controller/rich_text_controller.dart';
 ```
 
 ## Example
@@ -33,16 +33,17 @@ See Example page for example code.
 
 ## Usage
 
-| Property                                           | Description                                               | Default   |
-| -------------------------------------------------- | --------------------------------------------------------- | --------- |
-| **Map<RegExp, TextStyle>** patternMatchMap         | Map to match a certain RegExp pattern with a custom style | **--**    |
-| **Map<String, TextStyle>** stringMatchMap          | Map to match a certain word with a custom style           | **--**    |
-| **@required Function(List<String> match)** onMatch | Void Callback for matched content                         | **--**    |
-| **bool** deleteOnBack                              | delete the last matched content on backspace or not       | **false** |
-| **bool** regExpCaseSensitive                       | control the caseSensitive parameter of the used [RegExp]  | **true** |
-| **bool** regExpDotAll                              | control the dotAll parameter of the used [RegExp]         | **false** |
-| **bool** regExpMultiLine                           | control the multiLine parameter of the used [RegExp]      | **false** |
-| **bool** regExpUnicode                             | control the unicode parameter of the used [RegExp]        | **false** |
+| Property                                                | Description                                               | Default   |
+| ------------------------------------------------------- | --------------------------------------------------------- | --------- |
+| **Map<RegExp, TextStyle>** patternMatchMap              | Map to match a certain RegExp pattern with a custom style | **--**    |
+| **Map<String, TextStyle>** stringMatchMap               | Map to match a certain word with a custom style           | **--**    |
+| **@required Function(List<String> match)** onMatch      | Void Callback for matched content                         | **--**    |
+| **@required Function(List<String> match)** onMatchIndex | Void Callback for matched content on specific index       | **--**    |
+| **bool** deleteOnBack                                   | delete the last matched content on backspace or not       | **false** |
+| **bool** regExpCaseSensitive                            | control the caseSensitive parameter of the used [RegExp]  | **true**  |
+| **bool** regExpDotAll                                   | control the dotAll parameter of the used [RegExp]         | **false** |
+| **bool** regExpMultiLine                                | control the multiLine parameter of the used [RegExp]      | **false** |
+| **bool** regExpUnicode                                  | control the unicode parameter of the used [RegExp]        | **false** |
 
 ### Assertions
 
@@ -57,6 +58,11 @@ I will try to keep adding suggested features as i go.
 
 - EriKWDev
 - avatarnguyen
+- vs-krasnov
+- burhanaksendir
+- pal03377
+- joshuadeguzman
+- dafinoer
 
 ## Versioning
 
@@ -66,6 +72,7 @@ I will try to keep adding suggested features as i go.
 - **V1.2.0** - Resolved Issues + added String-Matching.
 - **V1.3.0** - Resolved Issues + added Null safety.
 - **V1.4.0** - Resolved Issues + added deleteOnBack functionality.
+- **V1.4.2** - Resolved Issues.
 
 ## Authors
 

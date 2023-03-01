@@ -43,10 +43,13 @@ class RichTextController extends TextEditingController {
 
   /// controls the caseSensitive property of the full [RegExp] used to pattern match
   final bool regExpCaseSensitive;
+
   /// controls the dotAll property of the full [RegExp] used to pattern match
   final bool regExpDotAll;
+
   /// controls the multiLine property of the full [RegExp] used to pattern match
   final bool regExpMultiLine;
+
   /// controls the unicode property of the full [RegExp] used to pattern match
   final bool regExpUnicode;
 
@@ -54,66 +57,89 @@ class RichTextController extends TextEditingController {
     return current.length < last.length;
   }
 
-  RichTextController({
-    String? text,
-    this.patternMatchMap,
-    this.stringMatchMap,
-    required this.onMatch,
-    this.onMatchIndex,
-    this.deleteOnBack = false,
-    this.regExpCaseSensitive = true,
-    this.regExpDotAll = false,
-    this.regExpMultiLine = false, 
-    this.regExpUnicode = false
-  })  : assert((patternMatchMap != null && stringMatchMap == null) ||
+  RichTextController(
+      {String? text,
+      this.patternMatchMap,
+      this.stringMatchMap,
+      required this.onMatch,
+      this.onMatchIndex,
+      this.deleteOnBack = false,
+      this.regExpCaseSensitive = true,
+      this.regExpDotAll = false,
+      this.regExpMultiLine = false,
+      this.regExpUnicode = false})
+      : assert((patternMatchMap != null && stringMatchMap == null) ||
             (patternMatchMap == null && stringMatchMap != null)),
         super(text: text);
 
+  /// Setting this will notify all the listeners of this [TextEditingController]
+  /// that they need to update (it calls [notifyListeners]).
+  @override
+  set text(String newText) {
+    value = value.copyWith(
+      text: newText,
+      selection: const TextSelection.collapsed(offset: -1),
+      composing: TextRange.empty,
+    );
+  }
+
+  /// Builds [TextSpan] from current editing value.
   @override
   TextSpan buildTextSpan(
       {required BuildContext context,
       TextStyle? style,
       required bool withComposing}) {
     List<TextSpan> children = [];
-    List<String> matches = [];
+    final matches = <String>{};
     List<Map<String, List<int>>> matchIndex = [];
 
     // Validating with REGEX
     RegExp? allRegex;
     allRegex = patternMatchMap != null
-        ? RegExp(
-          patternMatchMap?.keys.map((e) => e.pattern).join('|') ?? "", 
-          caseSensitive: regExpCaseSensitive,
-          dotAll: regExpDotAll,
-          multiLine: regExpMultiLine,
-          unicode: regExpUnicode
-        )
+        ? RegExp(patternMatchMap?.keys.map((e) => e.pattern).join('|') ?? "",
+            caseSensitive: regExpCaseSensitive,
+            dotAll: regExpDotAll,
+            multiLine: regExpMultiLine,
+            unicode: regExpUnicode)
         : null;
     // Validating with Strings
     RegExp? stringRegex;
     stringRegex = stringMatchMap != null
-        ? RegExp(
-          r'\b' + stringMatchMap!.keys.join('|').toString() + r'+\b',
-          caseSensitive: regExpCaseSensitive,
-          dotAll: regExpDotAll,
-          multiLine: regExpMultiLine,
-          unicode: regExpUnicode
-        )
+        ? RegExp(r'\b' + stringMatchMap!.keys.join('|').toString() + r'+\$',
+            caseSensitive: regExpCaseSensitive,
+            dotAll: regExpDotAll,
+            multiLine: regExpMultiLine,
+            unicode: regExpUnicode)
         : null;
     ////
     text.splitMapJoin(
       stringMatchMap == null ? allRegex! : stringRegex!,
       onNonMatch: (String span) {
-        children.add(TextSpan(text: span, style: style));
-        return span.toString();
+        if (stringMatchMap != null &&
+            children.isNotEmpty &&
+            stringMatchMap!.keys.contains("${children.last.text}$span")) {
+          final String? ks =
+              stringMatchMap!["${children.last.text}$span"] != null
+                  ? stringMatchMap?.entries.lastWhere((element) {
+                      return element.key
+                          .allMatches("${children.last.text}$span")
+                          .isNotEmpty;
+                    }).key
+                  : '';
+
+          children.add(TextSpan(text: span, style: stringMatchMap![ks!]));
+          return span.toString();
+        } else {
+          children.add(TextSpan(text: span, style: style));
+          return span.toString();
+        }
       },
       onMatch: (Match m) {
-        if (!matches.contains(m[0])) matches.add(m[0]!);
+        matches.add(m[0]!);
         final RegExp? k = patternMatchMap?.entries.firstWhere((element) {
           return element.key.allMatches(m[0]!).isNotEmpty;
         }).key;
-        
-        
+
         final String? ks = stringMatchMap?[m[0]] != null
             ? stringMatchMap?.entries.firstWhere((element) {
                 return element.key.allMatches(m[0]!).isNotEmpty;
@@ -155,7 +181,7 @@ class RichTextController extends TextEditingController {
           onMatchIndex!(matchIndex);
         }
 
-        return (onMatch(matches) ?? '');
+        return (onMatch(List<String>.unmodifiable(matches)) ?? '');
       },
     );
 

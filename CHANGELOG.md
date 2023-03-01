@@ -9,3 +9,5 @@
 ## [1.3.0] - Resolved Issues + added Null safety.
 
 ## [1.4.0] - Resolved Issues + added deleteOnBack functionality.
+
+## [1.4.2] - Resolved Issues.
