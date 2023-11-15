@@ -105,13 +105,14 @@ class RichTextController extends TextEditingController {
     // Validating with Strings
     RegExp? stringRegex;
     stringRegex = stringMatchMap != null
-        ? RegExp('\\b(?:${stringMatchMap!.keys.join('|').toString()})\\b',
+        ? RegExp('\\b(?:${stringMatchMap!.keys.join('|').toString()})\\b(?![\\wа-яА-ЯёЁіІїЇґҐa-zA-Z ])',
             caseSensitive: regExpCaseSensitive,
             dotAll: regExpDotAll,
             multiLine: regExpMultiLine,
             unicode: regExpUnicode)
         : null;
     ////
+    //\\b(?:${stringMatchMap!.keys.join('|').toString()})\\b
     text.splitMapJoin(
       stringMatchMap == null ? allRegex! : stringRegex!,
       onNonMatch: (String span) {
