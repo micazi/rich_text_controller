@@ -105,7 +105,7 @@ class RichTextController extends TextEditingController {
     // Validating with Strings
     RegExp? stringRegex;
     stringRegex = stringMatchMap != null
-        ? RegExp(r'\b' + stringMatchMap!.keys.join('|').toString() + r'+\$',
+        ? RegExp(r'\b' + stringMatchMap!.keys.join('|').toString() + r'\b',
             caseSensitive: regExpCaseSensitive,
             dotAll: regExpDotAll,
             multiLine: regExpMultiLine,
