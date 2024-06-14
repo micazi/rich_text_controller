@@ -102,8 +102,7 @@ class RichTextController extends TextEditingController {
     // combined regex!
     RegExp allRegex = RegExp((stringItemText.length > 1 ? "$stringItemText|" : stringItemText) + regItemText,
         multiLine: regExpMultiLine, caseSensitive: regExpCaseSensitive, dotAll: regExpDotAll, unicode: regExpUnicode);
-    debugPrint(allRegex.pattern.toString());
-    ////
+    //
     text.splitMapJoin(
       allRegex,
       onNonMatch: (String span) {
