@@ -1,6 +1,6 @@
 name: rich_text_controller
 description: An extended text editing controller that supports different inline styles for custom regex patterns
-version: 1.4.2
+version: 2.0.0
 homepage: https://github.com/micazi/rich_text_controller
 
 environment:
