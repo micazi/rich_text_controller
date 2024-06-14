@@ -27,27 +27,9 @@ import'package:rich_text_controller/rich_text_controller.dart';
 
 ## Example
 
-![](lib/demo.gif)
+![](example/demo.gif)
 
 See Example page for example code.
-
-## Usage
-
-| Property                                                | Description                                               | Default   |
-| ------------------------------------------------------- | --------------------------------------------------------- | --------- |
-| **Map<RegExp, TextStyle>** patternMatchMap              | Map to match a certain RegExp pattern with a custom style | **--**    |
-| **Map<String, TextStyle>** stringMatchMap               | Map to match a certain word with a custom style           | **--**    |
-| **@required Function(List<String> match)** onMatch      | Void Callback for matched content                         | **--**    |
-| **@required Function(List<String> match)** onMatchIndex | Void Callback for matched content on specific index       | **--**    |
-| **bool** deleteOnBack                                   | delete the last matched content on backspace or not       | **false** |
-| **bool** regExpCaseSensitive                            | control the caseSensitive parameter of the used [RegExp]  | **true**  |
-| **bool** regExpDotAll                                   | control the dotAll parameter of the used [RegExp]         | **false** |
-| **bool** regExpMultiLine                                | control the multiLine parameter of the used [RegExp]      | **false** |
-| **bool** regExpUnicode                                  | control the unicode parameter of the used [RegExp]        | **false** |
-
-### Assertions
-
-- Must not add both patternMatchMap and stringMatchMap, only one of them.
 
 ## Contributing
 
@@ -66,13 +48,14 @@ I will try to keep adding suggested features as i go.
 
 ## Versioning
 
-- **V1.0.0** - First Release.
-- **V1.0.1** - Added Example.
-- **V1.1.0** - Added onMatch Callback.
-- **V1.2.0** - Resolved Issues + added String-Matching.
-- **V1.3.0** - Resolved Issues + added Null safety.
-- **V1.4.0** - Resolved Issues + added deleteOnBack functionality.
+- **V2.0.0** - Updated/Refactored some code + Resolved some issues + Added RichWrapper Widget.
 - **V1.4.2** - Resolved Issues.
+- **V1.4.0** - Resolved Issues + added deleteOnBack functionality.
+- **V1.3.0** - Resolved Issues + added Null safety.
+- **V1.2.0** - Resolved Issues + added String-Matching.
+- **V1.1.0** - Added onMatch Callback.
+- **V1.0.1** - Added Example.
+- **V1.0.0** - First Release.
 
 ## Authors
 

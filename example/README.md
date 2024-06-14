@@ -32,29 +32,24 @@ RichTextController _controller;
       // initialize with your custom regex patterns or Strings and styles
       //* Starting V1.2.0 You also have "text" parameter in default constructor !
       _controller = RichTextController(
-          patternMatchMap: {
-           //
-          //* Returns every Hashtag with red color
-          //
-          RegExp(r"\B#[a-zA-Z0-9]+\b"):TextStyle(color:Colors.red),
-           //
-          //* Returns every Mention with blue color and bold style.
-          //
-          RegExp(r"\B@[a-zA-Z0-9]+\b"):TextStyle(fontWeight: FontWeight.w800 ,color:Colors.blue,),
-           //
-          //* Returns every word after '!' with yellow color and italic style.
-          //
-          RegExp(r"\B![a-zA-Z0-9]+\b"):TextStyle(color:Colors.yellow, fontStyle:FontStyle.italic),
-         // add as many expressions as you need!
-          },
-         //* starting v1.2.0
-         // Now you have the option to add string Matching!
-          stringMatchMap: {
-          "String1":TextStyle(color: Colors.red),
-          "String2":TextStyle(color: Colors.yellow),
-         },
-        //! Assertion: Only one of the two matching options can be given at a time!
-
+            targetMatches: [
+      MatchTargetItem(
+        text: 'coco',
+        style: TextStyle(
+          color: Colors.blue,
+          backgroundColor: Colors.green,
+        ),
+        allowInlineMatching: true,
+      ),
+      MatchTargetItem(
+        regex: RegExp(r"\B![a-zA-Z0-9]+\b"),
+        style: TextStyle(
+          color: Colors.yellow,
+          fontStyle: FontStyle.italic,
+        ),
+        allowInlineMatching: true,
+      ),
+    ],
          //* starting v1.1.0
          //* Now you have an onMatch callback that gives you access to a List<String>
          //* which contains all matched strings

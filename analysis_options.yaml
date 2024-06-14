@@ -1,0 +1,9 @@
+include: package:flutter_lints/flutter.yaml
+linter:
+  rules:
+    - prefer_relative_imports
+    - close_sinks
+    - avoid_empty_else
+    - file_names
+    - prefer_const_constructors
+    - no_leading_underscores_for_local_identifiers
