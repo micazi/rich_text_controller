@@ -48,6 +48,7 @@ I will try to keep adding suggested features as i go.
 
 ## Versioning
 
+- **V2.0.1** - Doc updates.
 - **V2.0.0** - Updated/Refactored some code + Resolved some issues + Added RichWrapper Widget.
 - **V1.4.2** - Resolved Issues.
 - **V1.4.0** - Resolved Issues + added deleteOnBack functionality.

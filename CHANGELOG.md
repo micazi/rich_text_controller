@@ -1,3 +1,5 @@
+## [2.0.1] - Doc Updates.
+
 ## [2.0.0] - Updated/Refactored some code + Resolved some issues + Added RichWrapper Widget.
 
 ## [1.4.2] - Resolved Issues.
