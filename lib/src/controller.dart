@@ -122,12 +122,23 @@ class RichTextController extends TextEditingController {
         return span.toString();
       },
       onMatch: (Match m) {
-        matches.add(m[0]!);
+        if (m[0] == null) return '';
+
+        String mTxt = m[0]!;
+        matches.add(mTxt);
         //
         MatchTargetItem? matchedItem;
         try {
-          matchedItem = targetMatches.firstWhere(
-              (r) => (r.text ?? r.regex)!.allMatches(m[0]!).isNotEmpty);
+          matchedItem = targetMatches.firstWhere((r) {
+            if (r.text != null) {
+              // Equality judgment is used to prevent string rules from matching results obtained from Regex.
+              return regExpCaseSensitive
+                  ? r.text == mTxt
+                  : r.text!.toLowerCase() == mTxt.toLowerCase();
+            } else {
+              return r.regex!.allMatches(mTxt).isNotEmpty;
+            }
+          });
         } catch (_) {}
 
         //
@@ -144,7 +155,7 @@ class RichTextController extends TextEditingController {
           } else {
             children.add(
               TextSpan(
-                text: m[0],
+                text: mTxt,
                 style: matchedItem?.style ?? style,
               ),
             );
@@ -152,7 +163,7 @@ class RichTextController extends TextEditingController {
         } else {
           children.add(
             TextSpan(
-              text: m[0],
+              text: mTxt,
               style: matchedItem?.style ?? style,
             ),
           );
