@@ -45,6 +45,7 @@ I will try to keep adding suggested features as i go.
 - pal03377
 - joshuadeguzman
 - dafinoer
+- jeffid
 
 ## Versioning
 
