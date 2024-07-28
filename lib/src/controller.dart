@@ -82,26 +82,38 @@ class RichTextController extends TextEditingController {
 
   /// Builds [TextSpan] from current editing value.
   @override
-  TextSpan buildTextSpan({required BuildContext context, TextStyle? style, required bool withComposing}) {
+  TextSpan buildTextSpan(
+      {required BuildContext context,
+      TextStyle? style,
+      required bool withComposing}) {
+    //
     List<TextSpan> children = [];
     final matches = <String>{};
     List<Map<String, List<int>>> matchIndex = [];
     // combined regex!
-    String regItemText = '';
     String stringItemText = '';
+    String regItemText = '';
     for (MatchTargetItem target in targetMatches) {
+      String b = target.allowInlineMatching ? '' : r'\b';
       //
-      if (target.regex != null) {
-        regItemText = '${regItemText.isNotEmpty ? '|$regItemText' : regItemText}${!target.allowInlineMatching ? '\\b' : ''}${target.regex!.pattern}';
-      }
       if (target.text != null) {
-        stringItemText = '${stringItemText.length > 1 ? '$stringItemText|' : stringItemText}${!target.allowInlineMatching ? '\\b' : ''}${target.text}';
+        stringItemText =
+            '${stringItemText.isEmpty ? "" : "$stringItemText|"}$b${target.text}';
+      }
+      if (target.regex != null) {
+        regItemText =
+            '${regItemText.isEmpty ? "" : "$regItemText|"}$b${target.regex!.pattern}';
       }
       //
     }
+
     // combined regex!
-    RegExp allRegex = RegExp((stringItemText.length > 1 ? "$stringItemText|" : stringItemText) + regItemText,
-        multiLine: regExpMultiLine, caseSensitive: regExpCaseSensitive, dotAll: regExpDotAll, unicode: regExpUnicode);
+    RegExp allRegex = RegExp(
+        (stringItemText.isEmpty ? '' : '$stringItemText|') + regItemText,
+        multiLine: regExpMultiLine,
+        caseSensitive: regExpCaseSensitive,
+        dotAll: regExpDotAll,
+        unicode: regExpUnicode);
     //
     text.splitMapJoin(
       allRegex,
@@ -110,13 +122,25 @@ class RichTextController extends TextEditingController {
         return span.toString();
       },
       onMatch: (Match m) {
-        matches.add(m[0]!);
+        if (m[0] == null) return '';
+
+        String mTxt = m[0]!;
+        matches.add(mTxt);
         //
-        final MatchTargetItem? matchedItem = targetMatches.where((r) => (r.regex != null ? r.regex!.allMatches(m[0]!).isNotEmpty : r.text!.allMatches(m[0]!).isNotEmpty)).isNotEmpty
-            ? targetMatches.firstWhere((e) {
-                return (e.regex != null ? e.regex!.allMatches(m[0]!).isNotEmpty : e.text!.allMatches(m[0]!).isNotEmpty);
-              })
-            : null;
+        MatchTargetItem? matchedItem;
+        try {
+          matchedItem = targetMatches.firstWhere((r) {
+            if (r.text != null) {
+              // Equality judgment is used to prevent string rules from matching results obtained from Regex.
+              return regExpCaseSensitive
+                  ? r.text == mTxt
+                  : r.text!.toLowerCase() == mTxt.toLowerCase();
+            } else {
+              return r.regex!.allMatches(mTxt).isNotEmpty;
+            }
+          });
+        } catch (_) {}
+
         //
         if (deleteOnBack!) {
           if ((isBack(text, _lastValue) && m.end == selection.baseOffset)) {
@@ -131,7 +155,7 @@ class RichTextController extends TextEditingController {
           } else {
             children.add(
               TextSpan(
-                text: m[0],
+                text: mTxt,
                 style: matchedItem?.style ?? style,
               ),
             );
@@ -139,7 +163,7 @@ class RichTextController extends TextEditingController {
         } else {
           children.add(
             TextSpan(
-              text: m[0],
+              text: mTxt,
               style: matchedItem?.style ?? style,
             ),
           );
