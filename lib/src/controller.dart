@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/widgets.dart';
 
 import 'models/match_target_item.dart';
@@ -53,6 +54,14 @@ class RichTextController extends TextEditingController {
   /// controls the unicode property of the full [RegExp] used to pattern match
   final bool regExpUnicode;
 
+  String? lastMatchedText;
+
+  int? lastMatchStart;
+
+  int? lastMatchEnd;
+
+  int? lastSelectionPos;
+
   bool isBack(String current, String last) {
     return current.length < last.length;
   }
@@ -67,6 +76,10 @@ class RichTextController extends TextEditingController {
     this.regExpDotAll = false,
     this.regExpMultiLine = false,
     this.regExpUnicode = false,
+    this.lastMatchedText = "",
+    this.lastMatchStart = -1,
+    this.lastMatchEnd = -1,
+    this.lastSelectionPos = -1,
   });
 
   /// Setting this will notify all the listeners of this [TextEditingController]
@@ -84,8 +97,8 @@ class RichTextController extends TextEditingController {
   @override
   TextSpan buildTextSpan(
       {required BuildContext context,
-      TextStyle? style,
-      required bool withComposing}) {
+        TextStyle? style,
+        required bool withComposing}) {
     //
     List<TextSpan> children = [];
     final matches = <String>{};
@@ -98,11 +111,11 @@ class RichTextController extends TextEditingController {
       //
       if (target.text != null) {
         stringItemText =
-            '${stringItemText.isEmpty ? "" : "$stringItemText|"}$b${target.text}';
+        '${stringItemText.isEmpty ? "" : "$stringItemText|"}$b${target.text}';
       }
       if (target.regex != null) {
         regItemText =
-            '${regItemText.isEmpty ? "" : "$regItemText|"}$b${target.regex!.pattern}';
+        '${regItemText.isEmpty ? "" : "$regItemText|"}$b${target.regex!.pattern}';
       }
       //
     }
@@ -118,10 +131,32 @@ class RichTextController extends TextEditingController {
     text.splitMapJoin(
       allRegex,
       onNonMatch: (String span) {
+        if (isBack(text, _lastValue) && selection.baseOffset + 1 == lastSelectionPos ) {
+
+          final String lastText = lastMatchedText!;
+          final int start = lastMatchStart!;
+          final int end = lastMatchEnd!;
+
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            text = text.replaceRange(start!, end!-1, "");
+
+            selection = selection.copyWith(
+              baseOffset: start!,
+              extentOffset: start!,
+            );
+            children.removeWhere((element) => element.text == lastText);
+          });
+          // 重置记录
+          lastMatchedText = "";
+          lastMatchStart = -1;
+          lastMatchEnd = -1;
+          lastSelectionPos = -1;
+        }
         children.add(TextSpan(text: span, style: style));
         return span.toString();
       },
       onMatch: (Match m) {
+
         if (m[0] == null) return '';
 
         String mTxt = m[0]!;
@@ -141,33 +176,23 @@ class RichTextController extends TextEditingController {
           });
         } catch (_) {}
 
-        //
-        if (deleteOnBack!) {
-          if ((isBack(text, _lastValue) && m.end == selection.baseOffset)) {
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              children.removeWhere((element) => element.text! == text);
-              text = text.replaceRange(m.start, m.end, "");
-              selection = selection.copyWith(
-                baseOffset: m.end - (m.end - m.start),
-                extentOffset: m.end - (m.end - m.start),
-              );
-            });
-          } else {
-            children.add(
-              TextSpan(
-                text: mTxt,
-                style: matchedItem?.style ?? style,
-              ),
-            );
-          }
-        } else {
-          children.add(
-            TextSpan(
-              text: mTxt,
-              style: matchedItem?.style ?? style,
-            ),
-          );
+        TapGestureRecognizer tapGestureRecognizer = TapGestureRecognizer()..onTap = matchedItem!.onTap!;
+
+        if(selection.baseOffset == m.end){
+          lastMatchedText = m[0];
+          lastMatchStart = m.start;
+          lastMatchEnd = m.end;
+          lastSelectionPos = selection.baseOffset;
         }
+
+        children.add(
+          TextSpan(
+            text: mTxt,
+            style: matchedItem?.style ?? style,
+            recognizer: tapGestureRecognizer,
+          ),
+        );
+
         final resultMatchIndex = matchValueIndex(m);
         if (resultMatchIndex != null && onMatchIndex != null) {
           matchIndex.add(resultMatchIndex);
