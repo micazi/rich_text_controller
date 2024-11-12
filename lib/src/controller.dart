@@ -86,7 +86,13 @@ class RichTextController extends TextEditingController {
       {required BuildContext context,
       TextStyle? style,
       required bool withComposing}) {
-    //
+
+    String matchText = text;
+    final bool composingRegionOutOfRange = !value.isComposingRangeValid || !withComposing;
+    if (!composingRegionOutOfRange) {
+      matchText = value.composing.textBefore(matchText);
+    }
+
     List<TextSpan> children = [];
     final matches = <String>{};
     List<Map<String, List<int>>> matchIndex = [];
@@ -115,7 +121,7 @@ class RichTextController extends TextEditingController {
         dotAll: regExpDotAll,
         unicode: regExpUnicode);
     //
-    text.splitMapJoin(
+    matchText.splitMapJoin(
       allRegex,
       onNonMatch: (String span) {
         children.add(TextSpan(text: span, style: style));
@@ -178,7 +184,18 @@ class RichTextController extends TextEditingController {
       },
     );
 
-    _lastValue = text;
+    // append composing text
+    if (!composingRegionOutOfRange) {
+      final TextStyle composingStyle = style?.merge(const TextStyle(decoration: TextDecoration.underline))
+        ?? const TextStyle(decoration: TextDecoration.underline);
+      children.add(TextSpan(
+          style: composingStyle,
+          text: value.composing.textInside(value.text),
+        ));
+      children.add(TextSpan(text: value.composing.textAfter(value.text))); 
+    }
+
+    _lastValue = matchText;
     return TextSpan(style: style, children: children);
   }
 
