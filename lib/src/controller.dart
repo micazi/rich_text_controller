@@ -1,378 +1,415 @@
-// import 'package:flutter/widgets.dart';
-
-// import 'models/match_target_item.dart';
-
-// /// a custom controller based on [TextEditingController] used to activly style input text based on regex patterns and word matching
-// /// with some custom features.
-// /// {@tool snippet}
-// ///
-// /// ```dart
-// /// class _ExampleState extends State<Example> {
-// ///
-// ///   late RichTextController _controller;
-// ///
-// /// _controller = RichTextController(
-// ///       deleteOnBack: true,
-// ///       patternMatchMap: {
-// ///         //Returns every Hashtag with red color
-// ///         RegExp(r"\B#[a-zA-Z0-9]+\b"):
-// ///             const TextStyle(color: Colors.red, fontSize: 22.0),
-// ///         //Returns every Mention with blue color and bold style.
-// ///         RegExp(r"\B@[a-zA-Z0-9]+\b"): const TextStyle(
-// ///           fontWeight: FontWeight.w800,
-// ///           color: Colors.blue,
-// ///         ),
-// ///       },
-// ///       regExpCaseSensitive: false,
-// /// );
-// ///
-// ///  TextFormField(
-// ///  controller: _controller,
-// ///  ...
-// /// )
-// ///
-// /// ```
-// /// {@end-tool}
-// class RichTextController extends TextEditingController {
-//   final List<MatchTargetItem> targetMatches;
-//   final Function(List<String> match) onMatch;
-//   final Function(List<Map<String, List<int>>>)? onMatchIndex;
-//   final bool? deleteOnBack;
-//   //
-//   String _lastValue = "";
-
-//   /// controls the caseSensitive property of the full [RegExp] used to pattern match
-//   final bool regExpCaseSensitive;
-
-//   /// controls the dotAll property of the full [RegExp] used to pattern match
-//   final bool regExpDotAll;
-
-//   /// controls the multiLine property of the full [RegExp] used to pattern match
-//   final bool regExpMultiLine;
-
-//   /// controls the unicode property of the full [RegExp] used to pattern match
-//   final bool regExpUnicode;
-
-//   bool isBack(String current, String last) {
-//     return current.length < last.length;
-//   }
-
-//   RichTextController({
-//     super.text,
-//     required this.targetMatches,
-//     required this.onMatch,
-//     this.onMatchIndex,
-//     this.deleteOnBack = false,
-//     this.regExpCaseSensitive = true,
-//     this.regExpDotAll = false,
-//     this.regExpMultiLine = false,
-//     this.regExpUnicode = false,
-//   });
-
-//   /// Setting this will notify all the listeners of this [TextEditingController]
-//   /// that they need to update (it calls [notifyListeners]).
-//   @override
-//   set text(String newText) {
-//     value = value.copyWith(
-//       text: newText,
-//       selection: const TextSelection.collapsed(offset: -1),
-//       composing: TextRange.empty,
-//     );
-//   }
-
-//   /// Builds [TextSpan] from current editing value.
-//   @override
-//   TextSpan buildTextSpan({required BuildContext context, TextStyle? style, required bool withComposing}) {
-//     List<TextSpan> children = [];
-//     final matches = <String>{};
-//     List<Map<String, List<int>>> matchIndex = [];
-//     // combined regex!
-//     String regItemText = '';
-//     String stringItemText = '';
-//     for (MatchTargetItem target in targetMatches) {
-//       //
-//       if (target.regex != null) {
-//         regItemText = '${regItemText.isNotEmpty ? '|$regItemText' : regItemText}${!target.allowInlineMatching ? '\\b' : ''}${target.regex!.pattern}';
-//       }
-//       if (target.text != null) {
-//         stringItemText = '${stringItemText.length > 1 ? '$stringItemText|' : stringItemText}${!target.allowInlineMatching ? '\\b' : ''}${target.text}';
-//       }
-//       //
-//     }
-//     // combined regex!
-//     RegExp allRegex = RegExp((stringItemText.length > 1 ? "$stringItemText|" : stringItemText) + regItemText,
-//         multiLine: regExpMultiLine, caseSensitive: regExpCaseSensitive, dotAll: regExpDotAll, unicode: regExpUnicode);
-//     //
-//     text.splitMapJoin(
-//       allRegex,
-//       onNonMatch: (String span) {
-//         children.add(TextSpan(text: span, style: style));
-//         return span.toString();
-//       },
-//       onMatch: (Match m) {
-//         matches.add(m[0]!);
-//         //
-//         final MatchTargetItem? matchedItem = targetMatches.where((r) => (r.regex != null ? r.regex!.allMatches(m[0]!).isNotEmpty : r.text!.allMatches(m[0]!).isNotEmpty)).isNotEmpty
-//             ? targetMatches.firstWhere((e) {
-//                 return (e.regex != null ? e.regex!.allMatches(m[0]!).isNotEmpty : e.text!.allMatches(m[0]!).isNotEmpty);
-//               })
-//             : null;
-//         //
-//         if (deleteOnBack!) {
-//           if ((isBack(text, _lastValue) && m.end == selection.baseOffset)) {
-//             WidgetsBinding.instance.addPostFrameCallback((_) {
-//               children.removeWhere((element) => element.text! == text);
-//               text = text.replaceRange(m.start, m.end, "");
-//               selection = selection.copyWith(
-//                 baseOffset: m.end - (m.end - m.start),
-//                 extentOffset: m.end - (m.end - m.start),
-//               );
-//             });
-//           } else {
-//             children.add(
-//               TextSpan(
-//                 text: m[0],
-//                 style: matchedItem?.style ?? style,
-//               ),
-//             );
-//           }
-//         } else {
-//           children.add(
-//             TextSpan(
-//               text: m[0],
-//               style: matchedItem?.style ?? style,
-//             ),
-//           );
-//         }
-//         final resultMatchIndex = matchValueIndex(m);
-//         if (resultMatchIndex != null && onMatchIndex != null) {
-//           matchIndex.add(resultMatchIndex);
-//           onMatchIndex!(matchIndex);
-//         }
-
-//         return (onMatch(List<String>.unmodifiable(matches)) ?? '');
-//       },
-//     );
-
-//     _lastValue = text;
-//     return TextSpan(style: style, children: children);
-//   }
-
-//   Map<String, List<int>>? matchValueIndex(Match match) {
-//     final matchValue = match[0]?.replaceFirstMapped('#', (match) => '');
-//     if (matchValue != null) {
-//       final firstMatchChar = match.start + 1;
-//       final lastMatchChar = match.end - 1;
-//       final compactMatch = {
-//         matchValue: [firstMatchChar, lastMatchChar]
-//       };
-//       return compactMatch;
-//     }
-//     return null;
-//   }
-// }
-
+// ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'package:flutter/gestures.dart';
 import 'package:flutter/widgets.dart';
+
 import 'models/match_target_item.dart';
 
-/// A custom controller based on [TextEditingController] used to actively style input text
-/// based on regex patterns and word matching with some custom features.
-/// {@tool snippet}
-///
-/// ```dart
-/// class _ExampleState extends State<Example> {
-///
-///   late RichTextController _controller;
-///
-/// _controller = RichTextController(
-///       deleteOnBack: true,
-///       targetMatches: [
-///         MatchTargetItem(
-///           text: 'coco',
-///           style: TextStyle(
-///             color: Colors.red,
-///             fontSize: 22.0,
-///           ),
-///         ),
-///         MatchTargetItem(
-///           regex: RegExp(r"\B@[a-zA-Z0-9]+\b"),
-///           style: TextStyle(
-///             fontWeight: FontWeight.w800,
-///             color: Colors.blue,
-///           ),
-///         ),
-///       ],
-///       onMatch: (matches) {
-///         print(matches);
-///       },
-/// );
-///
-///  TextFormField(
-///  controller: _controller,
-///  ...
-/// )
-///
-/// ```
-/// {@end-tool}
+/// A custom [TextEditingController] that supports rich text styling based on regex patterns
+/// and word matching. It allows you to highlight specific text patterns and apply custom styles
+/// to matched text. Additionally, it supports dynamic updates, IME composition, and tap callbacks
+/// for matched text.
 class RichTextController extends TextEditingController {
   final List<MatchTargetItem> targetMatches;
   final Function(List<String> match) onMatch;
   final Function(List<Map<String, List<int>>>)? onMatchIndex;
-  final bool? deleteOnBack;
-  //
+
   String _lastValue = "";
+  Match? _matchUnderCursor; // Cache the match under the cursor
+  MatchTargetItem?
+      _matchedItemUnderCursor; // Cache the matched item under the cursor
 
-  /// Controls the dotAll property of the full [RegExp] used to pattern match
-  final bool regExpDotAll;
+  /// Controls the dotAll property of the full [RegExp].
+  bool regExpDotAll;
 
-  /// Controls the multiLine property of the full [RegExp] used to pattern match
-  final bool regExpMultiLine;
+  /// Controls the multiLine property of the full [RegExp].
+  bool regExpMultiLine;
 
-  /// Controls the unicode property of the full [RegExp] used to pattern match
-  final bool regExpUnicode;
+  /// Controls the unicode property of the full [RegExp].
+  bool regExpUnicode;
 
-  /// Cached regex to avoid recompiling on every text change
+  /// Cached regex pattern and compiled RegExp.
   RegExp? _cachedRegex;
+  String? _cachedPattern;
   List<MatchTargetItem>? _cachedTargetMatches;
 
+  /// Creates a new [RichTextController].
+  ///
+  /// - [text]: The initial text for the controller.
+  /// - [targetMatches]: A list of [MatchTargetItem] objects defining the text or regex patterns
+  ///   to match and their associated styles.
+  /// - [onMatch]: A callback triggered when matches are found.
+  /// - [onMatchIndex]: A callback triggered with the indices of matches.
+  /// - [regExpDotAll]: Controls the dotAll property of the full [RegExp].
+  /// - [regExpMultiLine]: Controls the multiLine property of the full [RegExp].
+  /// - [regExpUnicode]: Controls the unicode property of the full [RegExp].
   RichTextController({
     super.text,
     required this.targetMatches,
     required this.onMatch,
     this.onMatchIndex,
-    this.deleteOnBack = false,
     this.regExpDotAll = false,
     this.regExpMultiLine = false,
     this.regExpUnicode = false,
   });
 
-  /// Updates the target matches dynamically without recreating the controller
+  /// Updates the target matches dynamically.
+  ///
+  /// - [newTargetMatches]: The new list of [MatchTargetItem] objects to use for matching.
   void updateTargetMatches(List<MatchTargetItem> newTargetMatches) {
-    targetMatches.clear();
-    targetMatches.addAll(newTargetMatches);
-    _cachedRegex = null; // Invalidate the cached regex
-    notifyListeners(); // Notify listeners to rebuild the text span
+    targetMatches
+      ..clear()
+      ..addAll(newTargetMatches);
+    _invalidateCache();
+    notifyListeners();
   }
 
-  /// Builds [TextSpan] from the current editing value.
+  /// Updates the RegExp properties dynamically.
+  ///
+  /// - [dotAll]: Whether to update the dotAll property of the full [RegExp].
+  /// - [multiLine]: Whether to update the multiLine property of the full [RegExp].
+  /// - [unicode]: Whether to update the unicode property of the full [RegExp].
+  void updateRegExpProperties({
+    bool? dotAll,
+    bool? multiLine,
+    bool? unicode,
+  }) {
+    bool changed = false;
+
+    if (dotAll != null && dotAll != regExpDotAll) {
+      regExpDotAll = dotAll;
+      changed = true;
+    }
+
+    if (multiLine != null && multiLine != regExpMultiLine) {
+      regExpMultiLine = multiLine;
+      changed = true;
+    }
+
+    if (unicode != null && unicode != regExpUnicode) {
+      regExpUnicode = unicode;
+      changed = true;
+    }
+
+    if (changed) {
+      _invalidateCache();
+      notifyListeners();
+    }
+  }
+
   @override
-  TextSpan buildTextSpan({required BuildContext context, TextStyle? style, required bool withComposing}) {
+  TextSpan buildTextSpan({
+    required BuildContext context,
+    TextStyle? style,
+    required bool withComposing,
+  }) {
     List<TextSpan> children = [];
     final matches = <String>{};
     List<Map<String, List<int>>> matchIndex = [];
 
-    // Handle composing text for IME input (e.g., Japanese, Chinese)
-    if (withComposing && value.composing.isValid && !value.composing.isCollapsed) {
-      final composingText = value.composing.textInside(value.text);
-      children.add(TextSpan(
-        text: composingText,
-        style: style?.merge(const TextStyle(decoration: TextDecoration.underline)),
-      ));
-    }
-
-    // Build the combined regex if not already cached
+    // Get or create the combined regex
     final allRegex = _getCombinedRegex(targetMatches);
 
-    // Split and match text
-    text.splitMapJoin(
-      allRegex,
-      onNonMatch: (String span) {
-        children.add(TextSpan(text: span, style: style));
-        return span.toString();
-      },
-      onMatch: (Match m) {
-        matches.add(m[0]!);
-        final MatchTargetItem? matchedItem = targetMatches.where((r) => (r.regex != null ? r.regex!.allMatches(m[0]!).isNotEmpty : r.text!.allMatches(m[0]!).isNotEmpty)).isNotEmpty
-            ? targetMatches.firstWhere((e) {
-                return (e.regex != null ? e.regex!.allMatches(m[0]!).isNotEmpty : e.text!.allMatches(m[0]!).isNotEmpty);
-              })
-            : null;
+    // Find all matches
+    final allMatches = allRegex.allMatches(text);
 
-        if (deleteOnBack!) {
-          if ((isBack(text, _lastValue) && m.end == selection.baseOffset)) {
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              children.removeWhere((element) => element.text! == text);
-              text = text.replaceRange(m.start, m.end, "");
-              selection = selection.copyWith(
-                baseOffset: m.end - (m.end - m.start),
-                extentOffset: m.end - (m.end - m.start),
-              );
-            });
-          } else {
-            children.add(
-              TextSpan(
-                text: m[0],
-                style: matchedItem?.style ?? style,
-              ),
-            );
-          }
-        } else {
-          children.add(
-            TextSpan(
-              text: m[0],
-              style: matchedItem?.style ?? style,
-            ),
-          );
-        }
+    // Handle IME composing region
+    if (withComposing &&
+        value.composing.isValid &&
+        !value.composing.isCollapsed) {
+      return _handleComposingText(style, allMatches, matches, matchIndex);
+    }
 
-        final resultMatchIndex = matchValueIndex(m);
-        if (resultMatchIndex != null && onMatchIndex != null) {
-          matchIndex.add(resultMatchIndex);
-          onMatchIndex!(matchIndex);
-        }
+    // Process matches if no IME composition is active
+    children
+        .addAll(_processText(text, style, allMatches, matches, matchIndex, 0));
 
-        return (onMatch(List<String>.unmodifiable(matches)) ?? '');
-      },
-    );
+    // Handle backspace deletion if enabled
+    if (isBack(text, _lastValue) &&
+        _matchUnderCursor != null &&
+        _matchedItemUnderCursor != null &&
+        _matchedItemUnderCursor!.deleteOnBack) {
+      _handleBackspaceDelete();
+    }
+
+    // Trigger callbacks
+    _triggerCallbacks(matches, matchIndex);
 
     _lastValue = text;
     return TextSpan(style: style, children: children);
   }
 
-  /// Generates the combined regex for all target matches
+  /// Handles IME composing text by splitting the text into non-composing and composing parts.
+  ///
+  /// - [style]: The base text style.
+  /// - [allMatches]: All regex matches in the text.
+  /// - [matches]: A set to store matched text.
+  /// - [matchIndex]: A list to store match indices.
+  TextSpan _handleComposingText(
+    TextStyle? style,
+    Iterable<Match> allMatches,
+    Set<String> matches,
+    List<Map<String, List<int>>> matchIndex,
+  ) {
+    List<TextSpan> children = [];
+    final composingStart = value.composing.start;
+    final composingEnd = value.composing.end;
+
+    // Add text before the composing region
+    if (composingStart > 0) {
+      final nonComposingText = text.substring(0, composingStart);
+      children.addAll(_processText(
+          nonComposingText, style, allMatches, matches, matchIndex, 0));
+    }
+
+    // Add the composing text with the appropriate style
+    final composingText = text.substring(composingStart, composingEnd);
+    final matchedItem = _findMatchedItemForText(composingText);
+
+    children.add(TextSpan(
+      text: composingText,
+      style: matchedItem.style.copyWith(
+          decoration:
+              TextDecoration.underline), // Apply underline to composing text
+    ));
+
+    // Add text after the composing region
+    if (composingEnd < text.length) {
+      final remainingText = text.substring(composingEnd);
+      children.addAll(_processText(
+          remainingText, style, allMatches, matches, matchIndex, composingEnd));
+    }
+
+    return TextSpan(style: style, children: children);
+  }
+
+  /// Processes the given text and generates [TextSpan]s for matched and non-matched text.
+  ///
+  /// - [text]: The text to process.
+  /// - [style]: The base text style.
+  /// - [allMatches]: All regex matches in the text.
+  /// - [matches]: A set to store matched text.
+  /// - [matchIndex]: A list to store match indices.
+  /// - [startOffset]: The starting offset of the text segment.
+  List<TextSpan> _processText(
+    String text,
+    TextStyle? style,
+    Iterable<Match> allMatches,
+    Set<String> matches,
+    List<Map<String, List<int>>> matchIndex,
+    int startOffset,
+  ) {
+    List<TextSpan> children = [];
+    int lastMatchEnd = startOffset;
+
+    for (final match in allMatches) {
+      final matchStart = match.start - startOffset;
+      final matchEnd = match.end - startOffset;
+
+      if (matchStart < 0 || matchEnd > text.length) continue;
+
+      // Add text before this match
+      if (matchStart > lastMatchEnd - startOffset) {
+        final nonMatchText =
+            text.substring(lastMatchEnd - startOffset, matchStart);
+        children.add(TextSpan(text: nonMatchText, style: style));
+      }
+
+      // Process the match
+      final matchText = match.group(0)!;
+      matches.add(matchText);
+
+      final matchedItem = _findMatchedItemForText(matchText);
+      children.add(_createTextSpanForMatch(matchText, matchedItem));
+
+      // Check if the cursor is within this match
+      _cacheMatchUnderCursor(match, matchedItem);
+
+      lastMatchEnd = match.end;
+
+      // Handle match index callback
+      _addMatchIndex(matchText, match, matchIndex);
+    }
+
+    // Add any remaining text after the last match
+    if (lastMatchEnd - startOffset < text.length) {
+      final remainingText = text.substring(lastMatchEnd - startOffset);
+      children.add(TextSpan(text: remainingText, style: style));
+    }
+
+    return children;
+  }
+
+  /// Finds the matching [MatchTargetItem] for the given text.
+  ///
+  /// - [text]: The text to match.
+  MatchTargetItem _findMatchedItemForText(String text) {
+    return targetMatches
+            .where(
+              (target) => target.regex?.hasMatch(text) ?? target.text == text,
+            )
+            .firstOrNull ??
+        targetMatches.first;
+  }
+
+  /// Creates a [TextSpan] for the matched text with the appropriate style and onTap callback.
+  ///
+  /// - [text]: The matched text.
+  /// - [matchedItem]: The [MatchTargetItem] associated with the matched text.
+  TextSpan _createTextSpanForMatch(String text, MatchTargetItem matchedItem) {
+    return TextSpan(
+      text: text,
+      style: matchedItem.style,
+      recognizer: matchedItem.onTap != null
+          ? (TapGestureRecognizer()..onTap = () => matchedItem.onTap!(text))
+          : null,
+    );
+  }
+
+  /// Caches the match and matched item under the cursor if the cursor is within the match.
+  ///
+  /// - [match]: The regex match.
+  /// - [matchedItem]: The [MatchTargetItem] associated with the match.
+  void _cacheMatchUnderCursor(Match match, MatchTargetItem matchedItem) {
+    if (selection.baseOffset >= match.start &&
+        selection.baseOffset <= match.end) {
+      _matchUnderCursor = match;
+      _matchedItemUnderCursor = matchedItem;
+    }
+  }
+
+  /// Adds the match indices to the [matchIndex] list for the callback.
+  ///
+  /// - [matchText]: The matched text.
+  /// - [match]: The regex match.
+  /// - [matchIndex]: The list to store match indices.
+  void _addMatchIndex(
+      String matchText, Match match, List<Map<String, List<int>>> matchIndex) {
+    if (onMatchIndex != null) {
+      matchIndex.add({
+        matchText: [match.start, match.end]
+      });
+    }
+  }
+
+  /// Handles backspace deletion of the match under the cursor.
+  void _handleBackspaceDelete() {
+    if (_matchUnderCursor != null &&
+        selection.baseOffset == _matchUnderCursor!.end - 1) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        final newText = text.replaceRange(
+            _matchUnderCursor!.start, _matchUnderCursor!.end - 1, "");
+        value = TextEditingValue(
+          text: newText,
+          selection: TextSelection.collapsed(offset: _matchUnderCursor!.start),
+        );
+        _matchUnderCursor = null; // Reset the cached match after deletion
+        _matchedItemUnderCursor =
+            null; // Reset the cached matched item after deletion
+      });
+    }
+  }
+
+  /// Triggers the [onMatch] and [onMatchIndex] callbacks if matches are found.
+  ///
+  /// - [matches]: The set of matched text.
+  /// - [matchIndex]: The list of match indices.
+  void _triggerCallbacks(
+      Set<String> matches, List<Map<String, List<int>>> matchIndex) {
+    if (matches.isNotEmpty) {
+      onMatch(List<String>.unmodifiable(matches));
+      if (onMatchIndex != null) {
+        onMatchIndex!(matchIndex);
+      }
+    }
+  }
+
+  /// Generates a combined regex pattern from the target matches.
+  ///
+  /// - [targetMatches]: The list of [MatchTargetItem] objects.
   RegExp _getCombinedRegex(List<MatchTargetItem> targetMatches) {
-    if (_cachedRegex != null && _cachedTargetMatches == targetMatches) {
+    if (_cachedRegex != null &&
+        _cachedTargetMatches != null &&
+        _listEquals(_cachedTargetMatches!, targetMatches)) {
       return _cachedRegex!;
     }
 
-    String regItemText = '';
-    String stringItemText = '';
-    for (MatchTargetItem target in targetMatches) {
+    final StringBuffer buffer = StringBuffer();
+    bool first = true;
+
+    for (final target in targetMatches) {
+      if (!first) buffer.write('|');
+
       if (target.regex != null) {
-        regItemText = '${regItemText.isNotEmpty ? '|$regItemText' : regItemText}${!target.allowInlineMatching ? '\\b' : ''}${target.regex!.pattern}';
+        // For regex patterns, use the pattern as-is if allowInlineMatching is true
+        // or if the pattern already contains \B (non-word boundary).
+        // Otherwise, wrap it with \b (word boundary).
+        final pattern =
+            target.allowInlineMatching || target.regex!.pattern.contains(r'\B')
+                ? target.regex!.pattern
+                : '\\b${target.regex!.pattern}\\b';
+        buffer.write('($pattern)');
+      } else if (target.text != null) {
+        // For plain text, escape it and handle special cases like !del
+        final escaped = RegExp.escape(target.text!);
+        final pattern = target.allowInlineMatching
+            ? escaped
+            : target.text!.startsWith('!')
+                ? '(?<!\\w)$escaped\\b' // Use lookbehind for !del
+                : '\\b$escaped\\b'; // Use word boundary for others
+        buffer.write('($pattern)');
       }
-      if (target.text != null) {
-        stringItemText = '${stringItemText.length > 1 ? '$stringItemText|' : stringItemText}${!target.allowInlineMatching ? '\\b' : ''}${target.text}';
-      }
+
+      first = false;
     }
 
+    _cachedPattern = buffer.toString();
+    _cachedTargetMatches = List.from(targetMatches);
     _cachedRegex = RegExp(
-      (stringItemText.length > 1 ? "$stringItemText|" : stringItemText) + regItemText,
+      _cachedPattern!,
       multiLine: regExpMultiLine,
       dotAll: regExpDotAll,
       unicode: regExpUnicode,
     );
-    _cachedTargetMatches = targetMatches;
 
     return _cachedRegex!;
   }
 
-  /// Checks if the current text change is a backspace operation
-  bool isBack(String current, String last) {
-    return current.length < last.length;
+  /// Checks if two lists are equal.
+  ///
+  /// - [list1]: The first list.
+  /// - [list2]: The second list.
+  bool _listEquals<T>(List<T> list1, List<T> list2) {
+    if (identical(list1, list2)) return true;
+    if (list1.length != list2.length) return false;
+    for (int i = 0; i < list1.length; i++) {
+      if (list1[i] != list2[i]) return false;
+    }
+    return true;
   }
 
-  /// Extracts match value and its index range
-  Map<String, List<int>>? matchValueIndex(Match match) {
-    final matchValue = match[0]?.replaceFirstMapped('#', (match) => '');
-    if (matchValue != null && matchValue.isNotEmpty) {
-      final firstMatchChar = match.start + 1;
-      final lastMatchChar = match.end - 1;
-      final compactMatch = {
-        matchValue: [firstMatchChar, lastMatchChar]
-      };
-      return compactMatch;
-    }
-    return null;
+  /// Checks if the current text change is a backspace operation.
+  ///
+  /// - [current]: The current text.
+  /// - [last]: The previous text.
+  bool isBack(String current, String last) {
+    return current.length <= last.length;
+  }
+
+  /// Invalidates the cached regex and related data.
+  void _invalidateCache() {
+    _cachedRegex = null;
+    _cachedPattern = null;
+    _cachedTargetMatches = null;
+  }
+
+  @override
+  void dispose() {
+    _invalidateCache();
+    super.dispose();
+  }
+
+  @override
+  String toString() {
+    return 'RichTextController(targetMatches: $targetMatches, onMatch: $onMatch, onMatchIndex: $onMatchIndex, regExpDotAll: $regExpDotAll, regExpMultiLine: $regExpMultiLine, regExpUnicode: $regExpUnicode, _cachedRegex: $_cachedRegex, _cachedPattern: $_cachedPattern, _cachedTargetMatches: $_cachedTargetMatches)';
   }
 }
