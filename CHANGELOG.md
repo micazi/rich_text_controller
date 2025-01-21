@@ -11,6 +11,7 @@
 - **FIX**: Fixed unintuitive behavior of `regExpCaseSensitive` overriding individual `RegExp` settings.
 - **FIX**: Cached combined regex in `RichTextController` to improve performance.
 - **FIX**: Improved error handling for invalid `targetMatches` and `composingRange`.
+- **TEST**: Added testing for all of the controller's features, as well as the  rich_wrapper widget and the targetMatch model.
 - **DOC**: Updated documentation for all public APIs, including `RichWrapper`, `RichTextController`, and `MatchTargetItem`.
 - **DOC**: Added example usage and detailed explanations for all features in the README and API reference.
 - **DEPS**: Updated SDK and package dependencies to the latest stable versions.

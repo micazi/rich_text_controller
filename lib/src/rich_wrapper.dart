@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'controller.dart';
-import 'models/match_target_item.dart';
+import 'models/match_target_item.model.dart';
 
 /// A wrapper widget around text fields that provides real-time updates for the [RichTextController]'s matching parameters.
 ///
@@ -100,10 +100,10 @@ class _RichWrapperState extends State<RichWrapper> {
   /// Initializes the [RichTextController] with the provided parameters.
   void _initializeController() {
     _controller = RichTextController(
-      text: widget.initialText,
+      text: widget.initialText ?? '',
       targetMatches: widget.targetMatches,
       onMatch: widget.onMatch ?? (_) {},
-      onMatchIndex: widget.onMatchIndex,
+      onMatchIndex: widget.onMatchIndex ?? (_) {},
       regExpDotAll: widget.regExpDotAll,
       regExpMultiLine: widget.regExpMultiLine,
       regExpUnicode: widget.regExpUnicode,
@@ -114,16 +114,22 @@ class _RichWrapperState extends State<RichWrapper> {
   void didUpdateWidget(covariant RichWrapper oldWidget) {
     super.didUpdateWidget(oldWidget);
 
-    // Check if any of the relevant properties have changed.
-    bool shouldUpdate = oldWidget.targetMatches != widget.targetMatches ||
-        oldWidget.deleteOnBack != widget.deleteOnBack ||
-        oldWidget.regExpDotAll != widget.regExpDotAll ||
+    // Update controller text if initialText changes
+    if (oldWidget.initialText != widget.initialText) {
+      _controller.text = widget.initialText ?? '';
+    }
+
+    // Update target matches and regex properties if necessary
+    bool shouldUpdateMatches = oldWidget.targetMatches != widget.targetMatches;
+    bool shouldUpdateRegExp = oldWidget.regExpDotAll != widget.regExpDotAll ||
         oldWidget.regExpMultiLine != widget.regExpMultiLine ||
         oldWidget.regExpUnicode != widget.regExpUnicode;
 
-    // Update the controller if necessary.
-    if (shouldUpdate) {
+    if (shouldUpdateMatches) {
       _controller.updateTargetMatches(widget.targetMatches);
+    }
+
+    if (shouldUpdateRegExp) {
       _controller.updateRegExpProperties(
         dotAll: widget.regExpDotAll,
         multiLine: widget.regExpMultiLine,

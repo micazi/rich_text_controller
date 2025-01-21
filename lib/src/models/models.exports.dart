@@ -1,1 +1,1 @@
-export './match_target_item.dart';
+export 'match_target_item.model.dart';

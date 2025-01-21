@@ -2,7 +2,7 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/widgets.dart';
 
-import 'models/match_target_item.dart';
+import 'models/match_target_item.model.dart';
 
 /// A custom [TextEditingController] that supports rich text styling based on regex patterns
 /// and word matching. It allows you to highlight specific text patterns and apply custom styles
@@ -18,13 +18,13 @@ class RichTextController extends TextEditingController {
   MatchTargetItem?
       _matchedItemUnderCursor; // Cache the matched item under the cursor
 
-  /// Controls the dotAll property of the full [RegExp].
+  /// Controls the dotAll property of the full combined [RegExp] of the match targets in the controller.
   bool regExpDotAll;
 
-  /// Controls the multiLine property of the full [RegExp].
+  /// Controls the multiLine property of the full combined [RegExp] of the match targets in the controller.
   bool regExpMultiLine;
 
-  /// Controls the unicode property of the full [RegExp].
+  /// Controls the unicode property of the full combined [RegExp] of the match targets in the controller.
   bool regExpUnicode;
 
   /// Cached regex pattern and compiled RegExp.
