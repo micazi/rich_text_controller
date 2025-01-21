@@ -1,3 +1,5 @@
+## 3.0.1
+- **DOC**: Resizing of the demo gif and updated the source URL.
 ## 3.0.0
 - **BREAKING CHANGE**: Removed `regExpCaseSensitive` property from `RichTextController`. Users must now set case sensitivity directly in the `RegExp` objects provided in `targetMatches`.
 - **BREAKING CHANGE**: Updated the `MatchTargetItem` to include the `deleteOnBack` method to be able to set it exclusively for a certain match target.

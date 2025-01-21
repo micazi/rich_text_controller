@@ -18,7 +18,7 @@
 ---
 ## Demo
 
-<img src="example/demo.gif" alt="Demo GIF" width="300" />
+<img src="https://github.com/micazi/rich_text_controller/raw/master/example/demo.gif" alt="Demo GIF" width="300" />
 
 ---
 
