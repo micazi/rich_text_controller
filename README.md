@@ -120,7 +120,6 @@ Contributions are always welcome! Here’s how you can help:
 2. Submit pull requests with well-documented code and examples.
 3. Share your thoughts and ideas to improve the package.
 
-
 ---
 
 ## License
